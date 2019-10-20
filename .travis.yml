@@ -1,4 +1,27 @@
+
+sudo: required
 language: java
-notifications:
-  email:
-      - logback-dev@qos.ch
+
+jdk:
+  - openjdk8
+
+script:
+  - mvn package -DskipTests
+
+before_deploy:
+    - mkdir MiningBuild
+    - find . -name '*.jar' -exec cp {} ./MiningBuild \;
+    - cd /home/travis/build/rafaresearch/logback/MiningBuild
+    - tar -zcvf result.tar.gz *
+deploy:
+  provider: releases
+  api_key:
+    secure: $GITHUB_TOKEN
+  file: result.tar.gz
+  name: fetchjar-542843fd04a793fb9e0eea0c84d199e66d7c15af
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    all_branches: true 
+            
